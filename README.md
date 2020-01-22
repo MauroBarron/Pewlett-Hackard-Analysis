@@ -35,32 +35,15 @@ So if the all the 72K eligible employees retire in the next four years at an ave
 
 Looking at the exodus by department, we can see that most retiring people are either Senior Engineeers or Senior Staff. 
 
-![image-20200121183535090](C:\Users\Marishka\AppData\Roaming\Typora\typora-user-images\image-20200121183535090.png)
-
-![Retirees by Job Title](Retirees by Job Title.png)
-
-
-
-![test image](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
-
-
-
-
+![Retirees by Job Title](/Images/Retirees_by_Job_Title.png)
 
 ###### Mentors to the Rescue
 
-![Retirees by Job Title](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
-
-
-
 Fortunately some folks have been identified as potential mentors that can help coach younger employees into developing their skills to take some of the senior positions.  The total number of mentors 8,555, represents about 12% of the retiring employees, so depending on their availability to actually server as mentors, this will alleviate the employee shortfall to a small degree
 
-![image-20200121190007963](C:\Users\Marishka\AppData\Roaming\Typora\typora-user-images\image-20200121190007963.png)
+![MentorsbyJobTitle](/Images/Mentors_by_Job_Title.png)
 
-![GitHub Logo](/images/github-logo.png)
-
-![image-20200121190007963](/image-20200121190007963.png)
-###### Recommedations
+###### Recommendations
 
 Clearly PH has to develop a thorough plan to handle this potentially disastrous shortfall of senior engineers and senior staff. Internal mentoring will definitely help, but overall a massive recruiting effort will need to take place.
 
@@ -70,7 +53,8 @@ Additional analysis should be done by department. For each department we should 
 
 The ERD below shows the provided and derived tables of the database.  Unfortunately QuickDBD limits the free diagram to ten named tables, so the table shown below named "Table 11," is the Mentor list. Other temporary derived tables were also not included in this ERD due to 10 table limit, but Mentor is too important to the business questions to drop from the ERD.
 
-![](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\PH Retiring Employees ERD.png)
+![ERD](/Images/PH_Retiring_Employees_ERD.png)
+
 
 ### 4 -List of Attachments
 
