@@ -39,6 +39,14 @@ Looking at the exodus by department, we can see that most retiring people are ei
 
 ![Retirees by Job Title](Retirees by Job Title.png)
 
+
+
+![test image](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
+
+
+
+
+
 ###### Mentors to the Rescue
 
 ![Retirees by Job Title](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
