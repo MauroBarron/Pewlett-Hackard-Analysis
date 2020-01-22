@@ -1,12 +1,12 @@
 # Boot camp. SQL with PostgreSQL
 # Practice creating an ERD with QuickDBD
 # 
-Departments
+departments
 -
 dept_no varchar pk
 dept_name varchar
 
-Employees
+employees
 -
 emp_no int pk
 birth_date date
@@ -15,30 +15,79 @@ last_name varchar
 gender varchar
 hire_date date
 
-Managers
+managers
 -
-dept_no varchar pk fk - Departments.dept_no
-emp_no int fk - Employees.emp_no
+dept_no varchar pk fk - departments.dept_no
+emp_no int fk - employees.emp_no
 from_date date 
 to_date date
 
-Department_Employees
+department_employees
 -
-dept_no varchar pk fk - Departments.dept_no
-emp_no int fk - Employees.emp_no
+dept_no varchar pk fk - departments.dept_no
+emp_no int fk - employees.emp_no
 from_date date
 to_date date
 
-Titles
+titles
 -
-emp_no int pk fk - Employees.emp_no
+emp_no int pk fk - employees.emp_no
 title varchar
 from_date date
 to_date date
 
-Salaries
+salaries
 -
-emp_no int pk fk - Employees.emp_no
+emp_no int pk fk - employees.emp_no
 salary int 
 from_date date
 to_date date
+
+retirement_info
+-
+emp_no int pk fk - employees.emp_no
+birth_date date
+first_name varchar
+
+current_emp
+-
+emp_no int pk fk - retirement_info.emp_no
+salary int 
+from_date date
+to_date date
+
+retiring_employees
+-
+count int pk 
+dept_no varchar fk - departments.dept_no
+
+emp_info
+-
+emp_no int pk fk - employees.emp_no 
+first_name varchar
+last_name varchar
+gender varchar
+salary int fk - salaries.emp_no
+to_date date fk - department_employees.emp_no
+
+recent_titles_retiring
+-
+emp_no int pk fk - employees.emp_no
+first_name varchar
+last_name varchar
+birth_date date
+title varchar
+from_date date
+to_date date
+salary int
+
+mentors
+-
+emp_no int pk fk - recent_titles_retiring.emp_no
+first_name varchar
+last_name varchar
+title varchar
+from_date date
+to_date date
+hire_date date
+birth_date date

@@ -21,6 +21,7 @@ SELECT em.emp_no,
 		em.first_name,
 		em.last_name,
 		em.hire_date,
+		em.birth_date,
 		ti.title,
 		ti.from_date,
 		ti.to_date,
@@ -30,12 +31,14 @@ FROM titles AS ti
 RIGHT JOIN employees AS em ON ti.emp_no = em.emp_no  -- join employees to all titles.
 LEFT JOIN salaries AS sa on em.emp_no=sa.emp_no  -- join employee salaries  
 JOIN department_employees as de ON em.emp_no = de.emp_no  -- Join dept to get current employee status 
-WHERE de.to_date = ('9999-01-01')  -- defines current employee  -- not retired.
-
+WHERE (em.birth_date BETWEEN '1952-01-01' AND '1955-12-31')  --  User defined retirement age range
+AND de.to_date = ('9999-01-01')  -- defines current employee 
+;
 
 ---		data counts
 ---  	Joins produced 489,903 rows. 
----  	de.to_date retirement filter reduces to 371,243
+---  	Birth range filter reduces to 147,942
+---     Current Employee filter [to_date]  reduces to 112,049
 ---		SELECT * FROM titles_retiring LIMIT 10 -- sanity check
 ---		SELECT COUNT(*) FROM titles_retiring 
 SELECT * FROM titles_retiring LIMIT 10 -- sanity check
@@ -49,7 +52,7 @@ SELECT * FROM titles_retiring LIMIT 10 -- sanity check
 ---  Remove Duplicates: this is actually a method to find duplicates which is what I thought the Challenge was
 ---  asking for on first read. They are actually asking for latest title.
 ---
----  Did find one duplicate, but code is here only as learning exercise.
+---  Did find one duplicate. Cleaned with 
 ---  
 SELECT
   emp_no,
@@ -67,28 +70,39 @@ HAVING count(*) > 1;
 
 ---DROP TABLE recent_titles_retiring;
 
-SELECT emp_no, first_name, last_name, hire_date, title, from_date, to_date, salary 
+SELECT emp_no, first_name, last_name, hire_date, birth_date, title, from_date, to_date, salary 
 INTO recent_titles_retiring
-FROM (SELECT emp_no, first_name, last_name, hire_date, title, from_date, to_date, salary, ROW_NUMBER() OVER 
+FROM (SELECT emp_no, first_name, last_name, hire_date, birth_date, title, from_date, to_date, salary, ROW_NUMBER() OVER 
 		(PARTITION BY (emp_no) ORDER BY from_date DESC) rn
    			FROM titles_retiring
   	 ) tmp WHERE rn = 1;
 
---- SELECT COUNT(*) FROM recent_titles_retiring; -- 240,124 -- looking good.
---- Check
+
+---  NOTE: The partitioning was dones using syntax found in https://blog.theodo.com/2018/01/search-destroy-duplicate-rows-postgresql
+
+--- Sanity Checks
+SELECT COUNT(*) FROM recent_titles_retiring; 72,458 -- looking good.
+---
 SELECT * FROM recent_titles_retiring
 ORDER BY 1;
+---
 
 ---
----  NOTE: The partitioning was dones using this syntax found in https://blog.theodo.com/2018/01/search-destroy-duplicate-rows-postgresql
+--- Duplicate Check After Partition
 ---
-SELECT id, firstname, lastname, startdate, position
-FROM
-  (SELECT id, firstname, lastname, startdate, position,
-     ROW_NUMBER() OVER 
-(PARTITION BY (firstname, lastname) ORDER BY startdate DESC) rn
-   FROM people
-  ) tmp WHERE rn = 1;
+SELECT
+  emp_no,
+  title,
+  count(*)
+FROM recent_titles_retiring
+GROUP BY
+  emp_no,
+  title
+HAVING count(*) > 1;
+
+---
+--- found no duplicates
+---
 
 
 ---
@@ -140,18 +154,23 @@ ORDER BY 2 DESC;
 select * from recent_titles_retiring
 ORDER BY 5
 
+-- DROP TABLE mentors
+
 SELECT emp_no,
 	first_name,
 	last_name,
 	title,
 	from_date,
 	to_date,
-	hire_date
---INTO 
+	hire_date,
+	birth_date
+INTO mentors
 FROM recent_titles_retiring 
-WHERE (hire_date BETWEEN '1985-01-01' AND '1985-12-31') 
+WHERE (hire_date BETWEEN '1985-01-01' AND '1985-12-31') -- Our user defined mentor age range
+-- sanity check
+SELECT COUNT(*) FROM mentors --- 8555
+SELECT * FROM mentors LIMIT 25
 
-ORDER BY 7
 
 ---
 ---
@@ -163,14 +182,51 @@ ORDER BY 7
 -- Number of individuals retiring
 --
 
--- Total number of current employees  -- 371243
+-- Total number of current employees  -- 240124
 SELECT COUNT(*)
 FROM employees AS em
 JOIN department_employees as de ON em.emp_no = de.emp_no  -- Join dept to get current employee status 
 WHERE de.to_date = ('9999-01-01')  -- 240124
 
+-- Total number of retirement eligible employees
+SELECT COUNT(*)FROM recent_titles_retiring -- 72458
+
+-- Calculate percentage
+SELECT CAST(72458 AS float) / CAST(240124 AS float)
+
+-- Calculate numbers hired in past five year?
+
+SELECT * FROM Employees ORDER BY hire_date DESC;
+
+SELECT COUNT(*) FROM Employees
+WHERE hire_date  BETWEEN '2000-01-01' AND '2000-12-31'; -- 13 -- not a full year - exclude
+
+SELECT COUNT(*) FROM Employees
+WHERE hire_date  BETWEEN '1999-01-01' AND '1999-12-31'; -- 1514
+
+SELECT COUNT(*) FROM Employees
+WHERE hire_date  BETWEEN '1998-01-01' AND '1998-12-31'; -- 4155
+
+SELECT COUNT(*) FROM Employees
+WHERE hire_date  BETWEEN '1997-01-01' AND '1997-12-31'; -- 6669
+
+SELECT COUNT(*) FROM Employees
+WHERE hire_date  BETWEEN '1996-01-01' AND '1996-12-31'; -- 9574
+
+SELECT ((1514 + 4155 + 6669 + 9574)/4)
 
 
+--- How about by dept?
 
+SELECT title, COUNT(title) 
+FROM recent_titles_retiring rtr
+GROUP BY rtr.title
+ORDER BY 2 DESC;
 
+-- Mentors by dept
+
+SELECT title, COUNT(title) 
+FROM mentors m
+GROUP BY m.title
+ORDER BY 2 DESC;
 
