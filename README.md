@@ -37,6 +37,8 @@ Looking at the exodus by department, we can see that most retiring people are ei
 
 ![image-20200121183535090](C:\Users\Marishka\AppData\Roaming\Typora\typora-user-images\image-20200121183535090.png)
 
+![Retirees by Job Title](Retirees by Job Title.png)
+
 ###### Mentors to the Rescue
 
 ![Retirees by Job Title](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
@@ -47,6 +49,9 @@ Fortunately some folks have been identified as potential mentors that can help c
 
 ![image-20200121190007963](C:\Users\Marishka\AppData\Roaming\Typora\typora-user-images\image-20200121190007963.png)
 
+![GitHub Logo](/images/github-logo.png)
+
+![image-20200121190007963](/image-20200121190007963.png)
 ###### Recommedations
 
 Clearly PH has to develop a thorough plan to handle this potentially disastrous shortfall of senior engineers and senior staff. Internal mentoring will definitely help, but overall a massive recruiting effort will need to take place.
