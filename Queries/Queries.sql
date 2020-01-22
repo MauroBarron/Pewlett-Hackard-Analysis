@@ -1,6 +1,3 @@
---- 
---- Pewlett Hackard Employee DB SQL Queries
----
 
 SELECT * FROM departments; 
 SELECT * FROM employees;
@@ -74,8 +71,8 @@ AND (hire_date BETWEEN '1985-01-01' AND '1988-12-31');
 
 -- Practice Selct Into
 SELECT first_name, last_name
-INTO  retirement_info
-FROM employees
+INTO  retirement_info --- Retiring Employees
+FROM employees  
 WHERE (birth_date BETWEEN '1952-01-01' AND '1955-12-31')
 AND (hire_date BETWEEN '1985-01-01' AND '1988-12-31');
 
@@ -116,7 +113,8 @@ ON departments.dept_no = dept_manager.dept_no;
 
 SELECT ri.emp_no, ri.first_name, ri.last_name, de.to_date
 FROM retirement_info as ri
-LEFT JOIN department_employees de ON ri.emp_no = de.emp_no;
+LEFT JOIN department_employees de ON ri.emp_no = de.emp_no
+ORDER BY 4 DESC;
 
 
 --  Aliasing more practice
@@ -136,7 +134,8 @@ limit 10;
 
 ---  Current Employees
 ---
---- Use more filtering to restrict the retiring employees
+--- Use more filtering to restrict the retiring employees so already retired employees are exempted.
+---- Recommendtions..  Use a Current Status flag.
 
 
 SELECT ri.emp_no,
@@ -147,8 +146,6 @@ INTO current_emp
 FROM retirement_info as ri
 LEFT JOIN department_employees as de ON ri.emp_no = de.emp_no
 WHERE de.to_date = ('9999-01-01');
-
-
 
 
 ---  Practice Counting, Joining and Order by
@@ -162,7 +159,7 @@ ON ce.emp_no = de.emp_no  -- join condtion
 GROUP BY de.dept_no  -- group by
 ORDER BY de.dept_no;
 
---- Skill Drill
+--- Skill Drill: Retiring Employees by Department
 --- Save the last query as a new table "retiring_employees"
 --- First save as table then save as CSV
 
@@ -206,20 +203,39 @@ ORDER BY de.dept_no;  -- order by
 ---
 
 ---
---- 1 Employee Information: A list of employees containing
+--- 1 Employee Information: A temporary list of employees containing
 --- 	their unique employee number, their last name, first name, gender, to_date, and salary
 ---     filter by retiring employees
+--- 
+---  Essentially Current Employees limited to retired in 9999-01-01
 
-SELECT em.emp_no, em.last_name, em.first_name, em.gender, sa.salary, de.to_date 
--- SELECT COUNT (*)  ---41,380  --45, 784 when joined with de - seems wrong - why take data from dept emp if emp is really what we want???
-INTO emp_info   
-FROM employees AS em
-INNER JOIN salaries sa 
-ON em.emp_no = sa.emp_no
-INNER JOIN department_employees de 
-ON em.emp_no = de.emp_no
-WHERE (em.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
-AND (em.hire_date BETWEEN '1985-01-01' AND '1988-12-31');
+
+-- Check of Salaries table shows to_date !!! I dont have the error they refer to in the instruction,
+SELECT * FROM salaries
+WHERE to_date < from_date
+ORDER BY to_date DESC;
+
+
+-- DROP TABLE emp_info
+
+SELECT e.emp_no,
+	e.first_name,
+	e.last_name,
+	e.gender,
+	s.salary,
+	de.to_date
+INTO emp_info
+FROM employees as e
+INNER JOIN salaries as s
+ON (e.emp_no = s.emp_no)
+INNER JOIN department_employees as de
+ON (e.emp_no = de.emp_no)
+WHERE (e.birth_date BETWEEN '1952-01-01' AND '1955-12-31')
+AND (e.hire_date BETWEEN '1985-01-01' AND '1988-12-31')
+AND (de.to_date = '9999-01-01');
+
+select * from emp_info
+select count(*) from emp_info --33,118
 
 
 ---
@@ -234,35 +250,43 @@ SELECT
 		dm.dept_no,
         d.dept_name,
         dm.emp_no,
-        ce.last_name,
-        ce.first_name,
+        ei.last_name,
+        ei.first_name,
         dm.from_date,
         dm.to_date
-INTO manager_info
+--INTO manager_info
 FROM dept_manager AS dm
 INNER JOIN departments AS d
 ON (dm.dept_no = d.dept_no)
-INNER JOIN current_emp AS ce
-ON (dm.emp_no = ce.emp_no);
+--INNER JOIN current_emp AS ce
+INNER JOIN emp_info AS ei
+ON (dm.emp_no = ei.emp_no);
 
-
+SELECT * FROM manager_info
+LIMIT 30
 ---
 --- Department Retirees: An updated current_emp list that includes everything it currently has, 
 --- but also the employee’s departments
 --- 
 
-SELECT ce.emp_no,
-ce.first_name,
-ce.last_name,
+--- DROP TABLE dept_info;
+
+SELECT ei.emp_no,
+ei.first_name,
+ei.last_name,
 d.dept_name	
--- INTO dept_info
-FROM current_emp as ce
+INTO dept_info
+FROM emp_info as ei
 INNER JOIN department_employees AS de
-ON (ce.emp_no = de.emp_no)
+ON (ei.emp_no = de.emp_no)
 INNER JOIN departments AS d
 ON (de.dept_no = d.dept_no)
 ORDER BY 2,3;
 
+SELECT * from dept_info
+LIMIT 50
+
+SELECT COUNT(*) FROM dept_info ---36,619
 
 ---
 ---
@@ -280,19 +304,23 @@ ORDER BY 2,3;
 -- Employee last name
 -- Employee department name
 -- 
+-- DROP TABLE sales_emp
 
-SELECT ce.emp_no,  -- current employee table
-ce.first_name,
-ce.last_name,
+SELECT ei.emp_no,  -- current employee table
+ei.first_name,
+ei.last_name,
 d.dept_name	  -- department table.
 INTO sales_emp
-FROM current_emp as ce
+FROM emp_info as ei
 INNER JOIN department_employees AS de
-ON (ce.emp_no = de.emp_no)
+ON (ei.emp_no = de.emp_no)
 INNER JOIN departments AS d
 ON (de.dept_no = d.dept_no)
 WHERE d.dept_name ='Sales'
 ORDER BY 3,2;
+
+emp_info
+SELECT * FROM sales_emp
 
 --
 -- Skill Drill
@@ -302,25 +330,23 @@ ORDER BY 3,2;
 -- Employee last name
 -- Employee department name
 --
-
-SELECT ce.emp_no,  -- current employee table
-ce.first_name,
-ce.last_name,
+-- DROP table sales_dev_emp
+SELECT ei.emp_no,  -- current employee table
+ei.first_name,
+ei.last_name,
 d.dept_name	  -- department table.
 INTO sales_dev_emp
-FROM current_emp as ce
+FROM emp_info as ei
 INNER JOIN department_employees AS de
-ON (ce.emp_no = de.emp_no)
+ON (ei.emp_no = de.emp_no)
 INNER JOIN departments AS d
 ON (de.dept_no = d.dept_no)
 WHERE d.dept_name IN ('Sales','Development') --- use In with WHERE
 ORDER BY 3,2;
 
---
---
--- select * from sales_dev_emp
---
---
 
-
-
+--
+-- SELECT COUNT (*) FROM sales_dev_emp
+-- SELECT * FROM sales_dev_emp
+--
+--
