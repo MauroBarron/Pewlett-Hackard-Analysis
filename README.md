@@ -39,6 +39,10 @@ Looking at the exodus by department, we can see that most retiring people are ei
 
 ###### Mentors to the Rescue
 
+![Retirees by Job Title](C:\Users\Marishka\Documents\DABootCamp\W8-SQL\Pewlett-Hackard-Analysis\Retirees by Job Title.png)
+
+
+
 Fortunately some folks have been identified as potential mentors that can help coach younger employees into developing their skills to take some of the senior positions.  The total number of mentors 8,555, represents about 12% of the retiring employees, so depending on their availability to actually server as mentors, this will alleviate the employee shortfall to a small degree
 
 ![image-20200121190007963](C:\Users\Marishka\AppData\Roaming\Typora\typora-user-images\image-20200121190007963.png)
